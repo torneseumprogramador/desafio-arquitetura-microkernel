@@ -1,0 +1,258 @@
+# ========================================
+# 🛒 Sistema Microkernel Ecommerce
+# ========================================
+
+# ========================================
+# 🐍 Java
+# ========================================
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# Arquivos de compilação
+*.log
+hs_err_pid*
+replay_pid*
+
+# ========================================
+# 🏗️ Maven
+# ========================================
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ========================================
+# 💾 Banco de Dados
+# ========================================
+*.db
+*.sqlite
+*.sqlite3
+microkernel_ecommerce.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# ========================================
+# 🖥️ Sistema Operacional
+# ========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ========================================
+# 🔧 IDEs e Editores
+# ========================================
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ========================================
+# 📝 Logs
+# ========================================
+*.log
+logs/
+log/
+
+# Logs específicos do projeto
+application.log
+error.log
+debug.log
+info.log
+warn.log
+
+# ========================================
+# 🔐 Configurações e Segredos
+# ========================================
+*.properties
+!src/main/resources/*.properties
+*.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Chaves e certificados
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# ========================================
+# 📦 Arquivos Temporários
+# ========================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.swp
+*.swo
+
+# ========================================
+# 🧪 Testes
+# ========================================
+test-results/
+coverage/
+.nyc_output/
+.coverage
+*.lcov
+
+# ========================================
+# 📊 Relatórios
+# ========================================
+reports/
+*.report
+*.html
+*.xml
+
+# ========================================
+# 🚀 Deploy e Build
+# ========================================
+dist/
+build/
+out/
+bin/
+
+# ========================================
+# 📱 Mobile e Web
+# ========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+
+# ========================================
+# 🐳 Docker
+# ========================================
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+
+# ========================================
+# ☁️ Cloud
+# ========================================
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# ========================================
+# 📋 Arquivos Específicos do Projeto
+# ========================================
+
+# Banco de dados SQLite
+microkernel_ecommerce.db
+*.db
+
+# Logs do SLF4J
+*.log
+
+# Arquivos de configuração local
+config/local.properties
+application-local.properties
+
+# ========================================
+# ✅ Arquivos que DEVEM ser versionados
+# ========================================
+!src/main/resources/*.properties
+!pom.xml
+!README.md
+!run.sh
+!push.sh
+!.gitignore 
