@@ -38,6 +38,7 @@ microkernel-ecommerce/
 │       └── core.Plugin           # Lista de plugins registrados
 ├── run.sh                        # Script de execução
 ├── push.sh                       # Script de automação Git
+├── .gitignore                    # Arquivos ignorados pelo Git
 ├── pom.xml                       # Configuração Maven
 └── microkernel_ecommerce.db      # Banco de dados SQLite (criado automaticamente)
 ```
@@ -90,6 +91,33 @@ O projeto inclui um script `push.sh` para facilitar o processo de commit e push:
 - **⬆️ Push**: Envia alterações para o repositório remoto
 - **🎨 Interface**: Mensagens coloridas e feedback visual
 
+### 📋 Arquivos Ignorados (.gitignore)
+
+O projeto inclui um `.gitignore` completo que ignora:
+
+#### **💾 Banco de Dados**
+- `*.db`, `*.sqlite`, `*.sqlite3` - Arquivos de banco SQLite
+- `microkernel_ecommerce.db` - Banco específico do projeto
+
+#### **🖥️ Sistema Operacional**
+- **macOS**: `.DS_Store`, `.AppleDouble`, `.Trashes`
+- **Windows**: `Thumbs.db`, `Desktop.ini`, `*.tmp`
+- **Linux**: `*~`, `.directory`, `.Trash-*`
+
+#### **🏗️ Maven/Java**
+- `target/` - Diretório de compilação
+- `*.class`, `*.jar` - Arquivos compilados
+- `*.log` - Logs de aplicação
+
+#### **🔧 IDEs e Editores**
+- `.idea/` (IntelliJ), `.vscode/` (VS Code)
+- `.project`, `.classpath` (Eclipse)
+- `*.swp`, `*.swo` (Vim)
+
+#### **📝 Logs**
+- `*.log` - Todos os arquivos de log
+- `logs/`, `log/` - Diretórios de log
+
 ### Compilação e Execução
 
 #### 🚀 Usando o Script de Execução (Recomendado)
@@ -130,6 +158,26 @@ mvn clean package
 java -jar target/microkernel-ecommerce-1.0.0.jar
 ```
 
+### 🛒 Menu de E-commerce
+
+O sistema agora oferece um **menu completo de e-commerce** com as seguintes funcionalidades:
+
+#### **🔐 Sistema de Login**
+- **Fazer Login**: Acesso com email e senha
+- **Cadastrar Novo Usuário**: Registro de novos clientes
+
+#### **🛍️ Área do Cliente**
+- **Ver Produtos**: Catálogo completo com preços e estoque
+- **Ver Carrinho**: Gerenciar produtos no carrinho de compras
+- **Meus Pedidos**: Histórico de pedidos realizados
+- **Meu Perfil**: Informações pessoais do cliente
+
+#### **💳 Processo de Compra**
+- **Adicionar ao Carrinho**: Selecionar produtos e quantidades
+- **Finalizar Compra**: Processar pagamento e criar pedido
+- **Controle de Estoque**: Atualização automática do estoque
+- **Histórico de Pedidos**: Acompanhamento de compras anteriores
+
 ### Saída Esperada
 
 ```
@@ -140,35 +188,51 @@ java -jar target/microkernel-ecommerce-1.0.0.jar
 📊 Conectado ao banco de dados SQLite
 📋 Tabelas criadas/verificadas com sucesso
 📝 Dados de exemplo inseridos com sucesso
-📦 Carregando plugins dinamicamente...
 
-=== Sistema Microkernel Ecommerce ===
-Carregando plugins dinamicamente...
+🛒 ========================================
+    SISTEMA E-COMMERCE MICROKERNEL
+========================================
+1. 🔐 Fazer Login
+2. 📝 Cadastrar Novo Usuário
+3. 🚪 Sair
+========================================
+Escolha uma opção: 2
 
-Plugin #1: User Plugin - Gerenciamento de Usuários
-Ação: Cadastrando usuário...
-  → Usuário 'Carlos Ferreira' cadastrado com sucesso!
-  → Listando usuários cadastrados:
-    - ID: 5, Nome: Carlos Ferreira, Email: carlos@email.com
-    - ID: 3, Nome: Pedro Costa, Email: pedro@email.com
-    - ID: 2, Nome: Maria Santos, Email: maria@email.com
+📝 ========================================
+           CADASTRAR USUÁRIO
+========================================
+👤 Nome completo: João Silva
+📧 Email: joao@email.com
+🔑 Senha: 123456
+✅ Usuário cadastrado com sucesso!
+🔐 Agora você pode fazer login!
 
-Plugin #2: Product Plugin - Gerenciamento de Produtos
-Ação: Listando produtos...
-  → Produtos disponíveis no catálogo:
-    - ID: 1, Nome: Notebook Dell
-      Descrição: Notebook Dell Inspiron 15 polegadas
-      Preço: R$ 2999.99
-      Estoque: 10 unidades
+🛒 ========================================
+    BEM-VINDO AO E-COMMERCE!
+========================================
+1. 🛍️ Ver Produtos
+2. 🛒 Ver Carrinho
+3. 📋 Meus Pedidos
+4. 👤 Meu Perfil
+5. 🔐 Sair
+========================================
+Escolha uma opção: 1
 
-    - ID: 2, Nome: Mouse Wireless
-      Descrição: Mouse sem fio Logitech
-      Preço: R$ 89.90
-      Estoque: 50 unidades
-
-    - ID: 3, Nome: Teclado Mecânico
-      Descrição: Teclado mecânico RGB
-      Preço: R$ 299.99
+🛍️ ========================================
+              PRODUTOS
+========================================
+📦 ID: 1
+   Nome: Notebook Dell
+   Descrição: Notebook Dell Inspiron 15 polegadas
+   Preço: R$ 2999.99
+   Estoque: 10 unidades
+   ----------------------------------------
+📦 ID: 2
+   Nome: Mouse Wireless
+   Descrição: Mouse sem fio Logitech
+   Preço: R$ 89.90
+   Estoque: 50 unidades
+   ----------------------------------------
       Estoque: 15 unidades
 
     - ID: 4, Nome: Monitor 24"

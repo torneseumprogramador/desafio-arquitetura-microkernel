@@ -87,7 +87,7 @@ show_help() {
     echo -e "${BLUE}Uso:${NC} $0 [OPÇÃO]"
     echo ""
     echo -e "${BLUE}Opções:${NC}"
-    echo -e "  ${GREEN}maven${NC}     - Executa via Maven com menu interativo (padrão)"
+    echo -e "  ${GREEN}maven${NC}     - Executa via Maven com menu de e-commerce (padrão)"
     echo -e "  ${GREEN}auto${NC}      - Executa via Maven em modo automático"
     echo -e "  ${GREEN}jar${NC}       - Executa via JAR"
     echo -e "  ${GREEN}build${NC}     - Gera JAR executável"

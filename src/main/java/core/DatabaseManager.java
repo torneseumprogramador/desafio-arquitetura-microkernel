@@ -115,7 +115,22 @@ public class DatabaseManager {
      * @return Connection com o banco de dados
      */
     public Connection getConnection() {
-        return connection;
+        try {
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection(DB_URL);
+            }
+            return connection;
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao obter conexão: " + e.getMessage());
+            // Tentar reconectar
+            try {
+                connection = DriverManager.getConnection(DB_URL);
+                return connection;
+            } catch (SQLException e2) {
+                System.err.println("❌ Erro ao reconectar: " + e2.getMessage());
+                return null;
+            }
+        }
     }
     
     /**

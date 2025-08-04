@@ -1,7 +1,7 @@
 package app;
 
 import core.Kernel;
-import core.InteractiveMenu;
+import core.EcommerceMenu;
 
 /**
  * Classe principal da aplicação Microkernel Ecommerce.
@@ -20,10 +20,10 @@ public class Main {
             // Inicializa o sistema (banco de dados)
             kernel.initialize();
             
-            // Apresenta menu interativo
-            InteractiveMenu menu = new InteractiveMenu();
-            menu.showMenu();
-            menu.close();
+            // Apresenta menu de e-commerce
+            EcommerceMenu ecommerce = new EcommerceMenu();
+            ecommerce.iniciar();
+            ecommerce.close();
             
         } catch (Exception e) {
             System.err.println("❌ Erro ao inicializar o sistema: " + e.getMessage());
