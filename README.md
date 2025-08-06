@@ -1,456 +1,403 @@
-# 🛒 Sistema Microkernel Ecommerce
+# 🛒 Ecommerce Microkernel Architecture - Desafio de Arquiteturas de Software
 
-Um sistema de ecommerce baseado na **Arquitetura Microkernel (Plugin-Based)** desenvolvido em Java com Maven.
+## 📚 Sobre o Projeto
 
-## 📋 Sobre a Arquitetura Microkernel
+Este projeto foi desenvolvido como parte do **Desafio de Arquiteturas de Software** do curso [Arquiteturas de Software Modernas](https://www.torneseumprogramador.com.br/cursos/arquiteturas_software) ministrado pelo **Prof. Danilo Aparecido** na plataforma [Torne-se um Programador](https://www.torneseumprogramador.com.br/).
 
-A **Arquitetura Microkernel** é um padrão arquitetural que separa a funcionalidade básica (core) da aplicação das funcionalidades opcionais (plugins). Os princípios fundamentais são:
+### 🎯 Objetivo
 
-### 🎯 Características Principais
+Implementar um sistema de e-commerce utilizando **Microkernel Architecture (Plugin-Based)** com Java, Maven, SQLite, JDBC e sistema de rotas declarativo.
 
-- **Núcleo Mínimo**: O kernel fornece apenas funcionalidades essenciais
-- **Extensibilidade**: Novas funcionalidades são adicionadas via plugins
-- **Baixo Acoplamento**: Plugins são independentes entre si
-- **Modularidade**: Cada plugin pode ser adicionado/removido sem afetar o sistema
-- **Descoberta Automática**: Plugins são carregados dinamicamente
+## 🏗️ Arquitetura
 
-### 🏗️ Organização dos Plugins
-
-Cada plugin é **autocontido** e organizado da seguinte forma:
+O projeto segue os princípios da **Microkernel Architecture** com separação clara entre core e plugins:
 
 ```
-plugins/user/
-├── entities/          # Modelos de dados
-├── repositories/      # Acesso a dados
-├── services/         # Lógica de negócio
-└── UserPlugin.java   # Plugin principal
+┌─────────────────────────────────────┐
+│              Core                   │ ← Kernel, DatabaseManager, RouteRegistry
+├─────────────────────────────────────┤
+│           Plugins                   │ ← UserPlugin, ProductPlugin, OrderPlugin
+│  ┌─────────┬─────────┬─────────┐   │
+│  │  User   │ Product │  Order  │   │ ← Cada plugin autocontido
+│  │ Plugin  │ Plugin  │ Plugin  │   │
+│  └─────────┴─────────┴─────────┘   │
+└─────────────────────────────────────┘
 ```
 
-#### **📦 Estrutura de um Plugin**
-- **Entities**: Classes que representam os dados
-- **Repositories**: Classes que acessam o banco de dados
-- **Services**: Classes que contêm a lógica de negócio
-- **Plugin**: Classe principal que implementa a interface `Plugin`
-
-#### **🔗 Integração com o Core**
-- O **Core** fornece apenas infraestrutura (DatabaseManager, PluginLoader)
-- Os **Plugins** são responsáveis por toda a lógica de domínio
-- Cada plugin pode ser desenvolvido e testado independentemente
-
-### 🏗️ Estrutura do Projeto
+### 📁 Estrutura do Projeto
 
 ```
 microkernel-ecommerce/
-├── core/                          # Núcleo limpo do sistema
-│   ├── Plugin.java               # Interface base dos plugins
-│   ├── PluginLoader.java         # Carregador de plugins via ServiceLoader
-│   ├── Kernel.java               # Orquestrador do sistema
-│   ├── DatabaseManager.java      # Gerenciador do banco SQLite
-│   ├── InteractiveMenu.java      # Menu interativo da aplicação
-│   └── EcommerceMenu.java        # Menu de e-commerce
-├── app/
-│   ├── Main.java                 # Ponto de entrada com menu interativo
-│   └── AutoMode.java             # Modo automático (sem menu)
-├── plugins/                       # Plugins autocontidos
-│   ├── user/                     # Plugin de usuários
-│   │   ├── entities/
-│   │   │   └── User.java
-│   │   ├── repositories/
-│   │   │   └── UserRepository.java
-│   │   ├── services/
-│   │   │   └── UserService.java
-│   │   └── UserPlugin.java
-│   ├── product/                  # Plugin de produtos
-│   │   ├── entities/
-│   │   │   └── Product.java
-│   │   ├── repositories/
-│   │   │   └── ProductRepository.java
-│   │   ├── services/
-│   │   │   └── ProductService.java
-│   │   └── ProductPlugin.java
-│   └── order/                    # Plugin de pedidos
-│       ├── entities/
-│       │   ├── Order.java
-│       │   └── OrderProduct.java
-│       ├── repositories/
-│       │   └── OrderRepository.java
-│       ├── services/
-│       │   └── OrderService.java
-│       └── OrderPlugin.java
-├── resources/
-│   └── META-INF/services/        # Configuração do ServiceLoader
-│       └── core.Plugin           # Lista de plugins registrados
-├── run.sh                        # Script de execução
-├── push.sh                       # Script de automação Git
-├── .gitignore                    # Arquivos ignorados pelo Git
-├── pom.xml                       # Configuração Maven
-└── microkernel_ecommerce.db      # Banco de dados SQLite (criado automaticamente)
+├── src/main/java/
+│   ├── app/                          # Camada de Aplicação
+│   │   ├── Main.java                 # Ponto de entrada da API
+│   │   ├── SeedRunner.java           # Executor de seed do banco
+│   │   └── AutoMode.java             # Modo automático (sem menu)
+│   ├── core/                         # Core do Microkernel
+│   │   ├── Kernel.java               # Orquestrador principal
+│   │   ├── Plugin.java               # Interface dos plugins
+│   │   ├── PluginLoader.java         # Carregador via ServiceLoader
+│   │   ├── DatabaseManager.java      # Gerenciador do SQLite
+│   │   ├── SeedManager.java          # Gerenciador de dados iniciais
+│   │   ├── Route.java                # Definição de rota
+│   │   ├── RouteRegistry.java        # Registro de rotas
+│   │   ├── SimpleController.java     # Controller base
+│   │   ├── CoreRoutes.java           # Rotas do core
+│   │   └── controllers/              # Controllers do core
+│   │       ├── HomeController.java    # Controller home
+│   │       └── HealthController.java  # Controller health
+│   └── plugins/                      # Plugins autocontidos
+│       ├── user/                     # Plugin de Usuários
+│       │   ├── UserPlugin.java       # Plugin principal
+│       │   ├── entities/             # Entidades
+│       │   ├── repositories/         # Repositórios
+│       │   ├── services/             # Serviços
+│       │   ├── controllers/          # Controllers
+│       │   └── routes/               # Definição de rotas
+│       ├── product/                  # Plugin de Produtos
+│       │   ├── ProductPlugin.java    # Plugin principal
+│       │   ├── entities/             # Entidades
+│       │   ├── repositories/         # Repositórios
+│       │   ├── services/             # Serviços
+│       │   ├── controllers/          # Controllers
+│       │   └── routes/               # Definição de rotas
+│       └── order/                    # Plugin de Pedidos
+│           ├── OrderPlugin.java      # Plugin principal
+│           ├── entities/             # Entidades
+│           ├── repositories/         # Repositórios
+│           ├── services/             # Serviços
+│           ├── controllers/          # Controllers
+│           └── routes/               # Definição de rotas
+├── src/main/resources/
+│   ├── META-INF/services/           # ServiceLoader
+│   │   └── core.Plugin              # Registro dos plugins
+│   └── simplelogger.properties      # Configuração do SLF4J
+├── scripts/                          # Scripts de automação
+│   ├── api.sh                       # Gerenciamento da API
+│   ├── seed.sh                      # Seed do banco
+│   └── test_api.sh                  # Testes da API
+├── run.sh                           # Script de execução
+├── push.sh                          # Script de Git
+├── pom.xml                          # Configuração Maven
+└── README.md                        # Esta documentação
 ```
 
-## 🚀 Como Executar
+## 🚀 Tecnologias Utilizadas
 
-### Pré-requisitos
+- **Java 11+** - Linguagem de programação
+- **Maven** - Gerenciamento de dependências
+- **SQLite** - Banco de dados local
+- **JDBC** - Acesso a dados
+- **SLF4J** - Logging
+- **ServiceLoader** - Descoberta de plugins
+- **HttpServer** - Servidor HTTP embutido
+- **Microkernel Architecture** - Organização do projeto
 
-- Java 11 ou superior
-- Maven 3.6 ou superior
+## 📋 Pré-requisitos
 
-### 📜 Script de Execução
+- [Java 11+](https://adoptium.net/)
+- [Maven](https://maven.apache.org/)
+- [Git](https://git-scm.com/)
 
-O projeto inclui um script `run.sh` que facilita a execução da aplicação:
-
-- **Verificação automática** de dependências (Java e Maven)
-- **Múltiplas opções** de execução (Maven, JAR, Auto)
-- **Mensagens coloridas** para melhor experiência
-- **Tratamento de erros** e validações
-
-### 🎮 Menu Interativo
-
-O sistema agora possui um menu interativo que permite:
-
-- **🚀 Executar todos os plugins**: Executa todos os plugins de uma vez
-- **🔧 Executar plugin específico**: Escolhe qual plugin executar
-- **📊 Informações do banco**: Mostra estatísticas do banco de dados
-- **🚪 Sair**: Encerra a aplicação
-
-### 🚀 Script de Automação Git
-
-O projeto inclui um script `push.sh` para facilitar o processo de commit e push:
+## ⚡ Como Executar
 
 ```bash
-# Push com mensagem interativa
-./push.sh
+# Clone o repositório
+$ git clone <url-do-repositorio>
+$ cd desafio-arquitetura-microkernel
 
-# Push com mensagem fornecida
-./push.sh "Adiciona menu interativo"
+# Compile o projeto
+$ mvn clean compile
 
-# Ver ajuda
-./push.sh help
+# Execute a aplicação
+$ ./run.sh
+
+# Ou execute diretamente
+$ mvn clean compile exec:java -Dexec.mainClass="app.Main"
+
+# Para modo automático (sem API)
+$ mvn clean compile exec:java -Dexec.mainClass="app.AutoMode"
 ```
 
-#### Funcionalidades do Script:
-- **✅ Verificações**: Git instalado e repositório válido
-- **📊 Status**: Mostra alterações antes do commit
-- **💾 Commit**: Commit automático com mensagem personalizada
-- **⬇️ Pull**: Atualiza repositório local
-- **⬆️ Push**: Envia alterações para o repositório remoto
-- **🎨 Interface**: Mensagens coloridas e feedback visual
+## 🌐 Acessando a API
 
-### 📋 Arquivos Ignorados (.gitignore)
+Após executar o projeto, a API estará disponível em:
 
-O projeto inclui um `.gitignore` completo que ignora:
+- **API Base**: http://localhost:8080
+- **Documentação**: http://localhost:8080/api/docs
+- **Health Check**: http://localhost:8080/api/health
 
-#### **💾 Banco de Dados**
-- `*.db`, `*.sqlite`, `*.sqlite3` - Arquivos de banco SQLite
-- `microkernel_ecommerce.db` - Banco específico do projeto
+## 📖 Endpoints da API
 
-#### **🖥️ Sistema Operacional**
-- **macOS**: `.DS_Store`, `.AppleDouble`, `.Trashes`
-- **Windows**: `Thumbs.db`, `Desktop.ini`, `*.tmp`
-- **Linux**: `*~`, `.directory`, `.Trash-*`
+### 🏠 Home
+| Método | Endpoint | Descrição                |
+|--------|----------|--------------------------|
+| GET    | `/`      | Página inicial da API    |
+| GET    | `/api`   | Informações da API       |
+| GET    | `/api/docs` | Documentação da API   |
 
-#### **🏗️ Maven/Java**
-- `target/` - Diretório de compilação
-- `*.class`, `*.jar` - Arquivos compilados
-- `*.log` - Logs de aplicação
+### ❤️ Health
+| Método | Endpoint           | Descrição                        |
+|--------|-------------------|----------------------------------|
+| GET    | `/api/health`     | Status básico da API             |
+| GET    | `/api/health/detailed` | Status detalhado da API      |
+| GET    | `/api/health/database` | Status do banco de dados   |
 
-#### **🔧 IDEs e Editores**
-- `.idea/` (IntelliJ), `.vscode/` (VS Code)
-- `.project`, `.classpath` (Eclipse)
-- `*.swp`, `*.swo` (Vim)
+### 👤 Usuários (User)
+| Método | Endpoint         | Descrição           |
+|--------|------------------|---------------------|
+| GET    | `/api/users`     | Listar usuários     |
+| GET    | `/api/users/{id}`| Buscar usuário por ID |
+| POST   | `/api/users`     | Criar usuário       |
+| PUT    | `/api/users/{id}`| Atualizar usuário   |
+| DELETE | `/api/users/{id}`| Deletar usuário     |
 
-#### **📝 Logs**
-- `*.log` - Todos os arquivos de log
-- `logs/`, `log/` - Diretórios de log
+### 📦 Produtos (Product)
+| Método | Endpoint           | Descrição           |
+|--------|--------------------|---------------------|
+| GET    | `/api/products`    | Listar produtos     |
+| GET    | `/api/products/available` | Produtos disponíveis |
+| GET    | `/api/products/{id}`| Buscar produto por ID |
+| POST   | `/api/products`    | Criar produto       |
+| PUT    | `/api/products/{id}`| Atualizar produto   |
+| PUT    | `/api/products/{id}/stock` | Atualizar estoque |
+| DELETE | `/api/products/{id}`| Deletar produto     |
 
-### Compilação e Execução
+### 🛒 Pedidos (Order)
+| Método | Endpoint           | Descrição           |
+|--------|--------------------|---------------------|
+| GET    | `/api/orders`      | Listar pedidos      |
+| GET    | `/api/orders/{id}` | Buscar pedido por ID|
+| GET    | `/api/orders/user/{userId}` | Pedidos do usuário |
+| POST   | `/api/orders`      | Criar pedido        |
+| POST   | `/api/orders/{id}/products` | Adicionar produto |
+| PUT    | `/api/orders/{id}` | Atualizar pedido    |
+| PUT    | `/api/orders/{id}/finalize` | Finalizar pedido |
+| DELETE | `/api/orders/{id}` | Deletar pedido      |
 
-#### 🚀 Usando o Script de Execução (Recomendado)
+## 🧪 Exemplos de Uso
 
+### Criar Usuário
 ```bash
-# Executar via Maven com menu interativo (padrão)
+curl -X POST "http://localhost:8080/api/users" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "João Silva",
+    "email": "joao@email.com",
+    "password": "123456"
+  }'
+```
+
+### Criar Produto
+```bash
+curl -X POST "http://localhost:8080/api/products" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Notebook Dell",
+    "description": "Notebook i7 16GB",
+    "price": 4999.99,
+    "stock": 10
+  }'
+```
+
+### Criar Pedido
+```bash
+curl -X POST "http://localhost:8080/api/orders" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": 1,
+    "products": [
+      {
+        "productId": 1,
+        "quantity": 2
+      }
+    ]
+  }'
+```
+
+## 🛠️ Scripts Disponíveis
+
+### Execução da Aplicação
+```bash
+# Executar API
 ./run.sh
 
-# Executar em modo automático (sem menu)
+# Executar modo automático
 ./run.sh auto
 
-# Executar via JAR
+# Gerar JAR executável
 ./run.sh jar
 
-# Gerar JAR executável
+# Build do projeto
 ./run.sh build
 
 # Limpar projeto
 ./run.sh clean
 
-# Ver ajuda
+# Ajuda
 ./run.sh help
 ```
 
-#### 🔧 Usando Maven Diretamente
-
+### Gerenciamento da API
 ```bash
-# Compilar o projeto
-mvn clean compile
+# Iniciar API
+./scripts/api.sh start
 
-# Executar via Maven
-mvn exec:java -Dexec.mainClass="app.Main"
+# Parar API
+./scripts/api.sh stop
 
-# Ou gerar JAR executável
-mvn clean package
+# Status da API
+./scripts/api.sh status
 
-# Executar o JAR gerado
-java -jar target/microkernel-ecommerce-1.0.0.jar
+# Logs da API
+./scripts/api.sh logs
+
+# Testar API
+./scripts/api.sh test
+
+# Seed do banco
+./scripts/api.sh seed
 ```
 
-### 🛒 Menu de E-commerce
+### Seed do Banco de Dados
+```bash
+# Executar seed normal
+./scripts/seed.sh
 
-O sistema agora oferece um **menu completo de e-commerce** com as seguintes funcionalidades:
+# Executar seed forçado (limpa dados existentes)
+./scripts/seed.sh force
 
-#### **🔐 Sistema de Login**
-- **Fazer Login**: Acesso com email e senha
-- **Cadastrar Novo Usuário**: Registro de novos clientes
-
-#### **🛍️ Área do Cliente**
-- **Ver Produtos**: Catálogo completo com preços e estoque
-- **Ver Carrinho**: Gerenciar produtos no carrinho de compras
-- **Meus Pedidos**: Histórico de pedidos realizados
-- **Meu Perfil**: Informações pessoais do cliente
-
-#### **💳 Processo de Compra**
-- **Adicionar ao Carrinho**: Selecionar produtos e quantidades
-- **Finalizar Compra**: Processar pagamento e criar pedido
-- **Controle de Estoque**: Atualização automática do estoque
-- **Histórico de Pedidos**: Acompanhamento de compras anteriores
-
-### Saída Esperada
-
-```
-🛒 Sistema Microkernel Ecommerce
-================================
-
-🚀 Inicializando Kernel do Sistema Microkernel...
-📊 Conectado ao banco de dados SQLite
-📋 Tabelas criadas/verificadas com sucesso
-📝 Dados de exemplo inseridos com sucesso
-
-🛒 ========================================
-    SISTEMA E-COMMERCE MICROKERNEL
-========================================
-1. 🔐 Fazer Login
-2. 📝 Cadastrar Novo Usuário
-3. 🚪 Sair
-========================================
-Escolha uma opção: 2
-
-📝 ========================================
-           CADASTRAR USUÁRIO
-========================================
-👤 Nome completo: João Silva
-📧 Email: joao@email.com
-🔑 Senha: 123456
-✅ Usuário cadastrado com sucesso!
-🔐 Agora você pode fazer login!
-
-🛒 ========================================
-    BEM-VINDO AO E-COMMERCE!
-========================================
-1. 🛍️ Ver Produtos
-2. 🛒 Ver Carrinho
-3. 📋 Meus Pedidos
-4. 👤 Meu Perfil
-5. 🔐 Sair
-========================================
-Escolha uma opção: 1
-
-🛍️ ========================================
-              PRODUTOS
-========================================
-📦 ID: 1
-   Nome: Notebook Dell
-   Descrição: Notebook Dell Inspiron 15 polegadas
-   Preço: R$ 2999.99
-   Estoque: 10 unidades
-   ----------------------------------------
-📦 ID: 2
-   Nome: Mouse Wireless
-   Descrição: Mouse sem fio Logitech
-   Preço: R$ 89.90
-   Estoque: 50 unidades
-   ----------------------------------------
-      Estoque: 15 unidades
-
-    - ID: 4, Nome: Monitor 24"
-      Descrição: Monitor LED 24 polegadas
-      Preço: R$ 599.99
-      Estoque: 8 unidades
-
-  → Estoque do Notebook Dell atualizado (1 unidade vendida)
-
-Plugin #3: Order Plugin - Gerenciamento de Pedidos
-Ação: Gerando pedido...
-  → Pedido #1 criado com sucesso!
-  → Produtos adicionados ao pedido #1
-  → Pedidos recentes:
-    - Pedido #1, Cliente: João Silva, Total: R$ 3089.89, Status: PENDING
-
-Plugin #4: Order Product Plugin - Gerenciamento de Produtos do Pedido
-Ação: Adicionando produto ao pedido...
-  → Produtos no pedido mais recente:
-    - Produto: Notebook Dell
-      Quantidade: 1
-      Preço unitário: R$ 2999.99
-      Total: R$ 2999.99
-
-    - Produto: Mouse Wireless
-      Quantidade: 1
-      Preço unitário: R$ 89.90
-      Total: R$ 89.90
-
-  → Total do pedido: R$ 3089.89
-  → 2x Teclado Mecânico adicionado ao pedido #1
-
-Plugin #5: Payment Plugin - Processamento de Pagamentos
-Ação: Processando pagamento...
-  → Pagamento processado para pedido #1
-  → Valor: R$ 3089.89
-  → Método: Cartão de Crédito
-  → Status: Aprovado
-  → Status do pedido #1 atualizado para PAID
-  → Pagamentos recentes:
-    - Pagamento #1, Pedido #1
-      Cliente: João Silva
-      Valor: R$ 3089.89
-      Método: CREDIT_CARD
-      Status: APPROVED
-
-Total de plugins carregados: 5
-=== Execução concluída ===
-🔒 Conexão com banco de dados fechada
+# Verificar se há dados
+./scripts/seed.sh check
 ```
 
-## 🔧 Como Adicionar Novos Plugins
+### Git Automation
+```bash
+# Push automático
+./push.sh "mensagem do commit"
 
-### 1. Criar a Classe do Plugin
+# Ajuda
+./push.sh help
+```
 
-Crie uma nova classe que implemente a interface `Plugin`:
+## 🛡️ Tratamento de Erros
 
-```java
-package plugins;
+A API retorna mensagens de erro padronizadas para validação e exceções de negócio.
 
-import core.Plugin;
-
-public class PaymentPlugin implements Plugin {
-    
-    @Override
-    public String getName() {
-        return "Payment Plugin - Processamento de Pagamentos";
-    }
-    
-    @Override
-    public void execute() {
-        System.out.println("Processando pagamento...");
-        System.out.println("  → Validando dados do cartão");
-        System.out.println("  → Autorizando transação");
-        System.out.println("  → Confirmando pagamento");
-    }
+### Exemplo de erro de validação
+```json
+{
+  "error": "Email já cadastrado",
+  "status": 400
 }
 ```
 
-### 2. Registrar o Plugin
+## 🔧 Configuração do Banco de Dados
 
-Adicione a classe do plugin ao arquivo `src/main/resources/META-INF/services/core.Plugin`:
+O banco SQLite é criado automaticamente no arquivo `microkernel_ecommerce.db` na raiz do projeto.
 
+### Estrutura do Banco
+```sql
+-- Tabela de usuários
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de produtos
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    stock INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de pedidos
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+    status TEXT NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Tabela de produtos do pedido
+CREATE TABLE order_products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
 ```
-plugins.UserPlugin
-plugins.ProductPlugin
-plugins.OrderPlugin
-plugins.OrderProductPlugin
-plugins.PaymentPlugin  # Nova linha
-```
 
-### 3. Recompilar e Executar
+## 🏗️ Arquitetura Microkernel
+
+### Princípios Aplicados
+
+1. **Core Mínimo**: Apenas infraestrutura essencial
+2. **Plugins Autocontidos**: Cada plugin gerencia sua própria entidade
+3. **Descoberta Dinâmica**: ServiceLoader carrega plugins automaticamente
+4. **Baixo Acoplamento**: Plugins não dependem uns dos outros
+5. **Extensibilidade**: Novos plugins podem ser adicionados facilmente
+
+### Vantagens da Arquitetura
+
+- ✅ **Modularidade**: Cada plugin é independente
+- ✅ **Extensibilidade**: Fácil adicionar novos recursos
+- ✅ **Manutenibilidade**: Mudanças isoladas por plugin
+- ✅ **Testabilidade**: Plugins podem ser testados isoladamente
+- ✅ **Flexibilidade**: Plugins podem ser ativados/desativados
+
+## 🧪 Testes da API
 
 ```bash
-mvn clean compile
-mvn exec:java -Dexec.mainClass="app.Main"
+# Testar todos os endpoints
+./scripts/test_api.sh
+
+# Testar endpoints específicos
+./scripts/test_api.sh users
+./scripts/test_api.sh products
+./scripts/test_api.sh orders
+./scripts/test_api.sh health
 ```
 
-## 🎯 Vantagens da Arquitetura Microkernel
+## 📝 Logs e Monitoramento
 
-### ✅ Benefícios
+A aplicação utiliza SLF4J para logging configurado em `src/main/resources/simplelogger.properties`.
 
-- **Extensibilidade**: Fácil adição de novas funcionalidades
-- **Manutenibilidade**: Mudanças em um plugin não afetam outros
-- **Testabilidade**: Plugins podem ser testados isoladamente
-- **Flexibilidade**: Plugins podem ser habilitados/desabilitados
-- **Reutilização**: Plugins podem ser reutilizados em outros sistemas
+### Níveis de Log
+- **INFO**: Operações normais
+- **WARN**: Avisos não críticos
+- **ERROR**: Erros que precisam atenção
+- **DEBUG**: Informações detalhadas para debug
 
-### 🔄 Fluxo de Execução
+## 👨‍🏫 Sobre o Professor
 
-1. **Inicialização**: O Kernel é criado e inicializado
-2. **Descoberta**: ServiceLoader descobre plugins automaticamente
-3. **Carregamento**: Plugins são carregados dinamicamente
-4. **Execução**: Cada plugin executa sua funcionalidade específica
-5. **Finalização**: Sistema exibe resumo da execução
+**Prof. Danilo Aparecido** é instrutor na plataforma [Torne-se um Programador](https://www.torneseumprogramador.com.br/), especializado em arquiteturas de software e desenvolvimento de sistemas escaláveis.
 
-## 📚 Conceitos Técnicos
+## 📚 Curso Completo
 
-### ServiceLoader
+Para aprender mais sobre arquiteturas de software e aprofundar seus conhecimentos, acesse o curso completo:
 
-O `java.util.ServiceLoader` é utilizado para:
-- Descoberta automática de implementações
-- Carregamento dinâmico de classes
-- Configuração via arquivos META-INF/services
-
-### Banco de Dados SQLite
-
-O sistema utiliza SQLite como banco de dados:
-- **Arquivo**: `microkernel_ecommerce.db` (criado automaticamente)
-- **Tabelas**: users, products, orders, order_products, payments
-- **Dados de Exemplo**: Inseridos automaticamente na primeira execução
-- **Conexão**: Gerenciada pelo `DatabaseManager` (Singleton)
-
-#### Estrutura do Banco
-
-```sql
--- Usuários do sistema
-users (id, name, email, created_at)
-
--- Produtos do catálogo
-products (id, name, description, price, stock, created_at)
-
--- Pedidos dos clientes
-orders (id, user_id, total_amount, status, created_at)
-
--- Produtos de cada pedido
-order_products (id, order_id, product_id, quantity, unit_price)
-
--- Pagamentos processados
-payments (id, order_id, amount, payment_method, status, created_at)
-```
-
-### Interface Plugin
-
-Define o contrato comum que todos os plugins devem implementar:
-- `getName()`: Identificação do plugin
-- `execute()`: Execução da funcionalidade
-
-### Kernel
-
-Atua como orquestrador do sistema:
-- Gerencia o ciclo de vida dos plugins
-- Fornece infraestrutura comum
-- Coordena a execução dos plugins
+**[Arquiteturas de Software Modernas](https://www.torneseumprogramador.com.br/cursos/arquiteturas_software)**
 
 ## 🤝 Contribuição
 
-Para contribuir com novos plugins ou melhorias:
+Este projeto foi desenvolvido como parte de um desafio educacional. Contribuições são bem-vindas através de issues e pull requests.
 
-1. Crie um novo plugin seguindo o padrão estabelecido
-2. Registre o plugin no arquivo de configuração
-3. Teste a execução
-4. Documente as funcionalidades adicionadas
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
-**Desenvolvido como demonstração da Arquitetura Microkernel em Java** 🚀 
+**Desenvolvido com ❤️ para o curso de Arquiteturas de Software do [Torne-se um Programador](https://www.torneseumprogramador.com.br/)** 
