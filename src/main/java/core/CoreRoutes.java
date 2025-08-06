@@ -1,38 +1,42 @@
-package plugins.user.routes;
+package core;
 
-import core.RouteRegistry;
-import plugins.user.controllers.UserController;
-import plugins.user.services.UserService;
+import core.controllers.HomeController;
+import core.controllers.HealthController;
 import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Configuração de rotas para o plugin de usuários.
- * Define todas as rotas de forma declarativa.
+ * Configuração de rotas para o core da aplicação.
+ * Define rotas básicas como home, health e documentação.
  */
-public class UserRoutes {
+public class CoreRoutes {
     
-    private final UserController controller;
+    private final HomeController homeController;
+    private final HealthController healthController;
     private final RouteRegistry routeRegistry;
     private final List<RouteRegistry.RouteDefinition> routeDefinitions;
     
-    public UserRoutes(UserService userService) {
-        this.controller = new UserController(userService);
+    public CoreRoutes() {
+        this.homeController = new HomeController();
+        this.healthController = new HealthController();
         this.routeRegistry = new RouteRegistry();
         this.routeDefinitions = new ArrayList<>();
         setupRoutes();
     }
     
     /**
-     * Configura todas as rotas do plugin de usuários.
+     * Configura todas as rotas do core da aplicação.
      */
     private void setupRoutes() {
-        // Rotas de usuários
-        addRoute("GET", "/api/users", "listUsers", controller);
-        addRoute("GET", "/api/users/{id}", "getUserById", controller);
-        addRoute("POST", "/api/users", "createUser", controller);
-        addRoute("PUT", "/api/users/{id}", "updateUser", controller);
-        addRoute("DELETE", "/api/users/{id}", "deleteUser", controller);
+        // Rotas do Home
+        addRoute("GET", "/", "getHome", homeController);
+        addRoute("GET", "/api", "getApiInfo", homeController);
+        addRoute("GET", "/api/docs", "getApiDocs", homeController);
+        
+        // Rotas do Health
+        addRoute("GET", "/api/health", "getHealth", healthController);
+        addRoute("GET", "/api/health/detailed", "getDetailedHealth", healthController);
+        addRoute("GET", "/api/health/database", "getDatabaseHealth", healthController);
         
         routeRegistry.addRoutes(routeDefinitions);
     }
@@ -51,7 +55,7 @@ public class UserRoutes {
     
     /**
      * Retorna o RouteRegistry configurado.
-     * @return RouteRegistry com todas as rotas de usuários
+     * @return RouteRegistry com todas as rotas do core
      */
     public RouteRegistry getRouteRegistry() {
         return routeRegistry;

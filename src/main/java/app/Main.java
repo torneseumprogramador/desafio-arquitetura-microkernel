@@ -1,11 +1,9 @@
 package app;
 
 import core.Kernel;
+import core.CoreRoutes;
+import core.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpExchange;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
@@ -40,6 +38,13 @@ public class Main {
             System.out.println("🚀 Servidor iniciado na porta " + PORT);
             System.out.println("📡 API disponível em: http://localhost:" + PORT);
             System.out.println("📋 Endpoints disponíveis:");
+            System.out.println("   🏠 Sistema:");
+            System.out.println("     GET  /              - Página inicial");
+            System.out.println("     GET  /api           - Informações da API");
+            System.out.println("     GET  /api/docs      - Documentação da API");
+            System.out.println("     GET  /api/health    - Status da aplicação");
+            System.out.println("     GET  /api/health/detailed - Status detalhado");
+            System.out.println("     GET  /api/health/database - Status do banco");
             System.out.println("   👥 Usuários:");
             System.out.println("     GET  /api/users     - Listar todos os usuários");
             System.out.println("     POST /api/users     - Criar novo usuário");
@@ -63,8 +68,6 @@ public class Main {
             System.out.println("     GET  /api/orders/user/{userId} - Buscar pedidos por usuário");
             System.out.println("     POST /api/orders/{id}/products - Adicionar produto ao pedido");
             System.out.println("     PUT  /api/orders/{id}/finalize - Finalizar pedido");
-            System.out.println("   🔍 Sistema:");
-            System.out.println("     GET  /api/health    - Status da API");
             System.out.println("\n⏹️  Pressione Ctrl+C para parar o servidor\n");
 
         } catch (Exception e) {
@@ -75,8 +78,9 @@ public class Main {
     }
 
     private static void setupEndpoints() {
-        // Health check
-        server.createContext("/api/health", new HealthHandler());
+        // Configurar rotas do core
+        CoreRoutes coreRoutes = new CoreRoutes();
+        server.createContext("/", coreRoutes.getRouteRegistry()::handleRequest);
         
         // Carregar plugins como APIs
         loadPluginApis();
@@ -101,35 +105,6 @@ public class Main {
             
         } catch (Exception e) {
             System.err.println("❌ Erro ao carregar plugins: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Handler para health check da API.
-     */
-    static class HealthHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            if ("GET".equals(exchange.getRequestMethod())) {
-                String response = "{\"status\":\"UP\",\"message\":\"Sistema Microkernel Ecommerce API\"}";
-                sendResponse(exchange, 200, response, "application/json");
-            } else {
-                sendResponse(exchange, 405, "Method not allowed", "text/plain");
-            }
-        }
-    }
-
-
-
-    /**
-     * Método auxiliar para enviar respostas HTTP.
-     */
-    private static void sendResponse(HttpExchange exchange, int statusCode, String response, String contentType) throws IOException {
-        exchange.getResponseHeaders().add("Content-Type", contentType);
-        exchange.sendResponseHeaders(statusCode, response.getBytes().length);
-        
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(response.getBytes());
         }
     }
 } 

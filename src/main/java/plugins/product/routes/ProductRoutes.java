@@ -1,4 +1,4 @@
-package plugins.product;
+package plugins.product.routes;
 
 import core.RouteRegistry;
 import plugins.product.controllers.ProductController;
@@ -14,10 +14,12 @@ public class ProductRoutes {
     
     private final ProductController controller;
     private final RouteRegistry routeRegistry;
+    private final List<RouteRegistry.RouteDefinition> routeDefinitions;
     
     public ProductRoutes(ProductService productService) {
         this.controller = new ProductController(productService);
         this.routeRegistry = new RouteRegistry();
+        this.routeDefinitions = new ArrayList<>();
         setupRoutes();
     }
     
@@ -25,18 +27,28 @@ public class ProductRoutes {
      * Configura todas as rotas do plugin de produtos.
      */
     private void setupRoutes() {
-        List<RouteRegistry.RouteDefinition> routes = new ArrayList<>();
-        
         // Rotas de produtos
-        routes.add(new RouteRegistry.RouteDefinition("GET", "/api/products", "listProducts", controller));
-        routes.add(new RouteRegistry.RouteDefinition("GET", "/api/products/available", "listAvailableProducts", controller));
-        routes.add(new RouteRegistry.RouteDefinition("GET", "/api/products/{id}", "getProductById", controller));
-        routes.add(new RouteRegistry.RouteDefinition("POST", "/api/products", "createProduct", controller));
-        routes.add(new RouteRegistry.RouteDefinition("PUT", "/api/products/{id}", "updateProduct", controller));
-        routes.add(new RouteRegistry.RouteDefinition("PUT", "/api/products/{id}/stock", "updateStock", controller));
-        routes.add(new RouteRegistry.RouteDefinition("DELETE", "/api/products/{id}", "deleteProduct", controller));
+        addRoute("GET", "/api/products", "listProducts", controller);
+        addRoute("GET", "/api/products/available", "listAvailableProducts", controller);
+        addRoute("GET", "/api/products/{id}", "getProductById", controller);
+        addRoute("POST", "/api/products", "createProduct", controller);
+        addRoute("PUT", "/api/products/{id}", "updateProduct", controller);
+        addRoute("PUT", "/api/products/{id}/stock", "updateStock", controller);
+        addRoute("DELETE", "/api/products/{id}", "deleteProduct", controller);
         
-        routeRegistry.addRoutes(routes);
+        routeRegistry.addRoutes(routeDefinitions);
+    }
+    
+    /**
+     * Adiciona uma rota à lista de definições e ao registro.
+     * @param method Método HTTP
+     * @param path Path da rota
+     * @param handlerMethod Nome do método handler
+     * @param controller Controller
+     */
+    private void addRoute(String method, String path, String handlerMethod, Object controller) {
+        RouteRegistry.RouteDefinition routeDef = new RouteRegistry.RouteDefinition(method, path, handlerMethod, controller);
+        routeDefinitions.add(routeDef);
     }
     
     /**
@@ -52,16 +64,6 @@ public class ProductRoutes {
      * @return Lista de rotas para debug/documentação
      */
     public List<RouteRegistry.RouteDefinition> getRouteDefinitions() {
-        List<RouteRegistry.RouteDefinition> definitions = new ArrayList<>();
-        
-        definitions.add(new RouteRegistry.RouteDefinition("GET", "/api/products", "listProducts", controller));
-        definitions.add(new RouteRegistry.RouteDefinition("GET", "/api/products/available", "listAvailableProducts", controller));
-        definitions.add(new RouteRegistry.RouteDefinition("GET", "/api/products/{id}", "getProductById", controller));
-        definitions.add(new RouteRegistry.RouteDefinition("POST", "/api/products", "createProduct", controller));
-        definitions.add(new RouteRegistry.RouteDefinition("PUT", "/api/products/{id}", "updateProduct", controller));
-        definitions.add(new RouteRegistry.RouteDefinition("PUT", "/api/products/{id}/stock", "updateStock", controller));
-        definitions.add(new RouteRegistry.RouteDefinition("DELETE", "/api/products/{id}", "deleteProduct", controller));
-        
-        return definitions;
+        return new ArrayList<>(routeDefinitions);
     }
 } 
