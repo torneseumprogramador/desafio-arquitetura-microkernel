@@ -14,25 +14,69 @@ A **Arquitetura Microkernel** é um padrão arquitetural que separa a funcionali
 - **Modularidade**: Cada plugin pode ser adicionado/removido sem afetar o sistema
 - **Descoberta Automática**: Plugins são carregados dinamicamente
 
+### 🏗️ Organização dos Plugins
+
+Cada plugin é **autocontido** e organizado da seguinte forma:
+
+```
+plugins/user/
+├── entities/          # Modelos de dados
+├── repositories/      # Acesso a dados
+├── services/         # Lógica de negócio
+└── UserPlugin.java   # Plugin principal
+```
+
+#### **📦 Estrutura de um Plugin**
+- **Entities**: Classes que representam os dados
+- **Repositories**: Classes que acessam o banco de dados
+- **Services**: Classes que contêm a lógica de negócio
+- **Plugin**: Classe principal que implementa a interface `Plugin`
+
+#### **🔗 Integração com o Core**
+- O **Core** fornece apenas infraestrutura (DatabaseManager, PluginLoader)
+- Os **Plugins** são responsáveis por toda a lógica de domínio
+- Cada plugin pode ser desenvolvido e testado independentemente
+
 ### 🏗️ Estrutura do Projeto
 
 ```
 microkernel-ecommerce/
-├── core/                          # Núcleo do sistema
+├── core/                          # Núcleo limpo do sistema
 │   ├── Plugin.java               # Interface base dos plugins
 │   ├── PluginLoader.java         # Carregador de plugins via ServiceLoader
 │   ├── Kernel.java               # Orquestrador do sistema
 │   ├── DatabaseManager.java      # Gerenciador do banco SQLite
-│   └── InteractiveMenu.java      # Menu interativo da aplicação
+│   ├── InteractiveMenu.java      # Menu interativo da aplicação
+│   └── EcommerceMenu.java        # Menu de e-commerce
 ├── app/
 │   ├── Main.java                 # Ponto de entrada com menu interativo
 │   └── AutoMode.java             # Modo automático (sem menu)
-├── plugins/                       # Plugins de domínio
-│   ├── UserPlugin.java           # Gerenciamento de usuários
-│   ├── ProductPlugin.java        # Gerenciamento de produtos
-│   ├── OrderPlugin.java          # Gerenciamento de pedidos
-│   ├── OrderProductPlugin.java   # Produtos do pedido
-│   └── PaymentPlugin.java        # Processamento de pagamentos
+├── plugins/                       # Plugins autocontidos
+│   ├── user/                     # Plugin de usuários
+│   │   ├── entities/
+│   │   │   └── User.java
+│   │   ├── repositories/
+│   │   │   └── UserRepository.java
+│   │   ├── services/
+│   │   │   └── UserService.java
+│   │   └── UserPlugin.java
+│   ├── product/                  # Plugin de produtos
+│   │   ├── entities/
+│   │   │   └── Product.java
+│   │   ├── repositories/
+│   │   │   └── ProductRepository.java
+│   │   ├── services/
+│   │   │   └── ProductService.java
+│   │   └── ProductPlugin.java
+│   └── order/                    # Plugin de pedidos
+│       ├── entities/
+│       │   ├── Order.java
+│       │   └── OrderProduct.java
+│       ├── repositories/
+│       │   └── OrderRepository.java
+│       ├── services/
+│       │   └── OrderService.java
+│       └── OrderPlugin.java
 ├── resources/
 │   └── META-INF/services/        # Configuração do ServiceLoader
 │       └── core.Plugin           # Lista de plugins registrados

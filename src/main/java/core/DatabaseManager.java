@@ -146,30 +146,4 @@ public class DatabaseManager {
             System.err.println("❌ Erro ao fechar conexão: " + e.getMessage());
         }
     }
-    
-    /**
-     * Insere dados de exemplo no banco de dados.
-     */
-    public void insertSampleData() {
-        try (Statement stmt = connection.createStatement()) {
-            
-            // Inserir usuários de exemplo
-            stmt.execute("INSERT OR IGNORE INTO users (name, email) VALUES " +
-                "('João Silva', 'joao@email.com')," +
-                "('Maria Santos', 'maria@email.com')," +
-                "('Pedro Costa', 'pedro@email.com')");
-            
-            // Inserir produtos de exemplo
-            stmt.execute("INSERT OR IGNORE INTO products (name, description, price, stock) VALUES " +
-                "('Notebook Dell', 'Notebook Dell Inspiron 15 polegadas', 2999.99, 10)," +
-                "('Mouse Wireless', 'Mouse sem fio Logitech', 89.90, 50)," +
-                "('Teclado Mecânico', 'Teclado mecânico RGB', 299.99, 15)," +
-                "('Monitor 24\"', 'Monitor LED 24 polegadas', 599.99, 8)");
-            
-            System.out.println("📝 Dados de exemplo inseridos com sucesso");
-            
-        } catch (SQLException e) {
-            System.err.println("❌ Erro ao inserir dados de exemplo: " + e.getMessage());
-        }
-    }
 } 

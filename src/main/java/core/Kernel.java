@@ -7,12 +7,14 @@ package core;
 public class Kernel {
     
     private final PluginLoader pluginLoader;
+    private final DatabaseManager dbManager;
     
     /**
      * Construtor que inicializa o Kernel com um PluginLoader.
      */
     public Kernel() {
         this.pluginLoader = new PluginLoader();
+        this.dbManager = DatabaseManager.getInstance();
     }
     
     /**
@@ -20,10 +22,6 @@ public class Kernel {
      */
     public void initialize() {
         System.out.println("🚀 Inicializando Kernel do Sistema Microkernel...");
-        
-        // Inicializar banco de dados
-        DatabaseManager dbManager = DatabaseManager.getInstance();
-        dbManager.insertSampleData();
         
         System.out.println("📦 Plugins carregados dinamicamente...\n");
     }
@@ -43,4 +41,6 @@ public class Kernel {
     public boolean hasPlugins() {
         return pluginLoader.getPluginCount() > 0;
     }
+
+
 } 

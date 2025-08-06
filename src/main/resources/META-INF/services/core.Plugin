@@ -1,5 +1,3 @@
-plugins.UserPlugin
-plugins.ProductPlugin
-plugins.OrderPlugin
-plugins.OrderProductPlugin
-plugins.PaymentPlugin 
+plugins.user.UserPlugin
+plugins.product.ProductPlugin
+plugins.order.OrderPlugin 
