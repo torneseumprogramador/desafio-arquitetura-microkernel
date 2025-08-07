@@ -1,6 +1,7 @@
 package plugins.order.entities;
 
 import java.math.BigDecimal;
+import plugins.product.entities.Product;
 
 /**
  * Entidade que representa um produto de um pedido.

@@ -3,9 +3,12 @@ package app;
 import core.Kernel;
 import core.CoreRoutes;
 import core.HttpHandler;
+import core.controllers.HomeController;
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Servidor HTTP simples para API REST do Sistema Microkernel Ecommerce.
@@ -13,6 +16,7 @@ import java.util.concurrent.Executors;
 public class Main {
     private static final int PORT = 8080;
     private static HttpServer server;
+    private static List<HomeController.PluginInfo> loadedPlugins = new ArrayList<>();
 
     public static void main(String[] args) {
         System.out.println("🛒 Sistema Microkernel Ecommerce API");
@@ -35,40 +39,9 @@ public class Main {
             // Iniciar servidor
             server.start();
             
-            System.out.println("🚀 Servidor iniciado na porta " + PORT);
-            System.out.println("📡 API disponível em: http://localhost:" + PORT);
-            System.out.println("📋 Endpoints disponíveis:");
-            System.out.println("   🏠 Sistema:");
-            System.out.println("     GET  /              - Página inicial");
-            System.out.println("     GET  /api           - Informações da API");
-            System.out.println("     GET  /api/docs      - Documentação da API");
-            System.out.println("     GET  /api/health    - Status da aplicação");
-            System.out.println("     GET  /api/health/detailed - Status detalhado");
-            System.out.println("     GET  /api/health/database - Status do banco");
-            System.out.println("   👥 Usuários:");
-            System.out.println("     GET  /api/users     - Listar todos os usuários");
-            System.out.println("     POST /api/users     - Criar novo usuário");
-            System.out.println("     GET  /api/users/{id} - Buscar usuário por ID");
-            System.out.println("     PUT  /api/users/{id} - Atualizar usuário");
-            System.out.println("     DELETE /api/users/{id} - Deletar usuário");
-            System.out.println("   📦 Produtos:");
-            System.out.println("     GET  /api/products     - Listar todos os produtos");
-            System.out.println("     POST /api/products     - Criar novo produto");
-            System.out.println("     GET  /api/products/{id} - Buscar produto por ID");
-            System.out.println("     PUT  /api/products/{id} - Atualizar produto");
-            System.out.println("     DELETE /api/products/{id} - Deletar produto");
-            System.out.println("     GET  /api/products/available - Listar produtos disponíveis");
-            System.out.println("     PUT  /api/products/{id}/stock - Atualizar estoque");
-            System.out.println("   📋 Pedidos:");
-            System.out.println("     GET  /api/orders     - Listar todos os pedidos");
-            System.out.println("     POST /api/orders     - Criar novo pedido");
-            System.out.println("     GET  /api/orders/{id} - Buscar pedido por ID");
-            System.out.println("     PUT  /api/orders/{id} - Atualizar pedido");
-            System.out.println("     DELETE /api/orders/{id} - Deletar pedido");
-            System.out.println("     GET  /api/orders/user/{userId} - Buscar pedidos por usuário");
-            System.out.println("     POST /api/orders/{id}/products - Adicionar produto ao pedido");
-            System.out.println("     PUT  /api/orders/{id}/finalize - Finalizar pedido");
-            System.out.println("\n⏹️  Pressione Ctrl+C para parar o servidor\n");
+            // Exibir informações dinâmicas
+            displayServerInfo();
+            displayEndpoints();
 
         } catch (Exception e) {
             System.err.println("❌ Erro ao inicializar o servidor: " + e.getMessage());
@@ -84,27 +57,97 @@ public class Main {
         
         // Carregar plugins como APIs
         loadPluginApis();
+        
+        // Injetar informações dos plugins no HomeController
+        HomeController.setLoadedPlugins(loadedPlugins);
     }
 
     private static void loadPluginApis() {
         try {
             // Carregar plugin de usuários
             plugins.user.UserPlugin userPlugin = new plugins.user.UserPlugin();
-            server.createContext("/api/users", userPlugin.getHttpHandler());
+            server.createContext("/api/users", (com.sun.net.httpserver.HttpHandler) userPlugin.getHttpHandler()::handle);
+            loadedPlugins.add(new HomeController.PluginInfo(userPlugin.getName(), "/api/users", userPlugin));
             System.out.println("✅ Plugin de Usuários carregado como API");
             
             // Carregar plugin de produtos
             plugins.product.ProductPlugin productPlugin = new plugins.product.ProductPlugin();
-            server.createContext("/api/products", productPlugin.getHttpHandler());
+            server.createContext("/api/products", (com.sun.net.httpserver.HttpHandler) productPlugin.getHttpHandler()::handle);
+            loadedPlugins.add(new HomeController.PluginInfo(productPlugin.getName(), "/api/products", productPlugin));
             System.out.println("✅ Plugin de Produtos carregado como API");
             
-            // Carregar plugin de pedidos
-            plugins.order.OrderPlugin orderPlugin = new plugins.order.OrderPlugin();
-            server.createContext("/api/orders", orderPlugin.getHttpHandler());
-            System.out.println("✅ Plugin de Pedidos carregado como API");
+            // // Carregar plugin de pedidos (desabilitado para teste)
+            // plugins.order.OrderPlugin orderPlugin = new plugins.order.OrderPlugin();
+            // server.createContext("/api/orders", (com.sun.net.httpserver.HttpHandler) orderPlugin.getHttpHandler()::handle);
+            // loadedPlugins.add(new HomeController.PluginInfo(orderPlugin.getName(), "/api/orders", orderPlugin));
+            // System.out.println("✅ Plugin de Pedidos carregado como API");
             
         } catch (Exception e) {
             System.err.println("❌ Erro ao carregar plugins: " + e.getMessage());
         }
+    }
+
+    private static void displayServerInfo() {
+        System.out.println("🚀 Servidor iniciado na porta " + PORT);
+        System.out.println("📡 API disponível em: http://localhost:" + PORT);
+        System.out.println("📦 Plugins carregados: " + loadedPlugins.size());
+        System.out.println();
+    }
+
+    private static void displayEndpoints() {
+        System.out.println("📋 Endpoints disponíveis:");
+        
+        // Endpoints do sistema (sempre disponíveis)
+        System.out.println("   🏠 Sistema:");
+        System.out.println("     GET  /              - Página inicial");
+        System.out.println("     GET  /api           - Informações da API");
+        System.out.println("     GET  /api/docs      - Documentação da API");
+        System.out.println("     GET  /api/health    - Status da aplicação");
+        System.out.println("     GET  /api/health/detailed - Status detalhado");
+        System.out.println("     GET  /api/health/database - Status do banco");
+        System.out.println("   📚 Swagger:");
+        System.out.println("     GET  /api/swagger   - Documentação OpenAPI (JSON)");
+        System.out.println("     GET  /api/swagger-ui - Interface Swagger UI");
+        
+        // Endpoints dos plugins carregados dinamicamente
+        for (HomeController.PluginInfo plugin : loadedPlugins) {
+            System.out.println("   " + plugin.getPlugin().getEmoji() + " " + plugin.getName() + ":");
+            displayPluginEndpoints(plugin);
+        }
+        
+        System.out.println("\n🌐 Acesse a documentação interativa:");
+        System.out.println("   📖 Swagger UI: http://localhost:" + PORT + "/api/swagger-ui");
+        System.out.println("   📄 OpenAPI JSON: http://localhost:" + PORT + "/api/swagger");
+        System.out.println("\n⏹️  Pressione Ctrl+C para parar o servidor");
+        
+        // Manter o servidor rodando
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            System.out.println("\n🛑 Servidor interrompido");
+        } finally {
+            if (server != null) {
+                server.stop(0);
+            }
+        }
+    }
+
+    private static void displayPluginEndpoints(HomeController.PluginInfo plugin) {
+        System.out.println("   " + plugin.getPlugin().getEmoji() + " " + plugin.getName() + ":");
+        
+        // Listar endpoints do plugin
+        List<String> routes = plugin.getPlugin().getAvailableRoutes();
+        for (String route : routes) {
+            String[] parts = route.split(" - ", 2);
+            String methodPath = parts[0].trim();
+            String description = parts.length > 1 ? parts[1].trim() : "";
+            
+            String[] methodPathParts = methodPath.split("\\s+", 2);
+            String method = methodPathParts[0];
+            String path = methodPathParts[1];
+            
+            System.out.println("     " + method + " " + path + " - " + description);
+        }
+        System.out.println();
     }
 } 

@@ -46,6 +46,13 @@ public class OrderService {
     }
 
     /**
+     * Lista todos os pedidos.
+     */
+    public List<Order> getAllOrders() throws SQLException {
+        return orderRepository.findAll();
+    }
+
+    /**
      * Lista pedidos por usuário.
      */
     public List<Order> findOrdersByUserId(Integer userId) throws SQLException {

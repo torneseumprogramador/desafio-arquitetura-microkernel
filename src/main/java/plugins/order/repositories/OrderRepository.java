@@ -86,6 +86,28 @@ public class OrderRepository {
     }
 
     /**
+     * Lista todos os pedidos.
+     */
+    public List<Order> findAll() throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT id, user_id, total_amount, status, created_at FROM orders ORDER BY created_at DESC";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Order order = new Order();
+                    order.setId(rs.getInt("id"));
+                    order.setUserId(rs.getInt("user_id"));
+                    order.setTotalAmount(rs.getBigDecimal("total_amount"));
+                    order.setStatus(rs.getString("status"));
+                    order.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    orders.add(order);
+                }
+            }
+        }
+        return orders;
+    }
+
+    /**
      * Atualiza o status de um pedido.
      */
     public void updateStatus(Integer orderId, String status) throws SQLException {
