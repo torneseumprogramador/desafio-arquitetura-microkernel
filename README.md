@@ -6,7 +6,7 @@ Este projeto foi desenvolvido como parte do **Desafio de Arquiteturas de Softwar
 
 ### 🎯 Objetivo
 
-Implementar um sistema de e-commerce utilizando **Microkernel Architecture (Plugin-Based)** com Java, Maven, SQLite, JDBC e sistema de rotas declarativo.
+Implementar um sistema de e-commerce utilizando **Microkernel Architecture (Plugin-Based)** com Java, Maven, SQLite, JDBC, sistema de rotas declarativo e **documentação Swagger/OpenAPI plugável**.
 
 ## 🏗️ Arquitetura
 
@@ -43,9 +43,12 @@ microkernel-ecommerce/
 │   │   ├── RouteRegistry.java        # Registro de rotas
 │   │   ├── SimpleController.java     # Controller base
 │   │   ├── CoreRoutes.java           # Rotas do core
+│   │   ├── HttpHandler.java          # Interface HTTP handler
+│   │   ├── SwaggerGenerator.java     # Gerador de documentação OpenAPI
 │   │   └── controllers/              # Controllers do core
 │   │       ├── HomeController.java    # Controller home
-│   │       └── HealthController.java  # Controller health
+│   │       ├── HealthController.java  # Controller health
+│   │       └── SwaggerController.java # Controller Swagger
 │   └── plugins/                      # Plugins autocontidos
 │       ├── user/                     # Plugin de Usuários
 │       │   ├── UserPlugin.java       # Plugin principal
@@ -91,6 +94,8 @@ microkernel-ecommerce/
 - **SLF4J** - Logging
 - **ServiceLoader** - Descoberta de plugins
 - **HttpServer** - Servidor HTTP embutido
+- **Swagger/OpenAPI** - Documentação interativa
+- **Jackson** - Processamento JSON
 - **Microkernel Architecture** - Organização do projeto
 
 ## 📋 Pré-requisitos
@@ -126,6 +131,42 @@ Após executar o projeto, a API estará disponível em:
 - **API Base**: http://localhost:8080
 - **Documentação**: http://localhost:8080/api/docs
 - **Health Check**: http://localhost:8080/api/health
+- **📖 Swagger UI**: http://localhost:8080/api/swagger-ui
+- **📄 OpenAPI JSON**: http://localhost:8080/api/swagger
+
+## 📖 Documentação Swagger/OpenAPI
+
+### 🎯 Documentação Plugável
+
+O sistema possui **documentação Swagger/OpenAPI totalmente plugável** que se adapta dinamicamente aos plugins carregados:
+
+#### **✨ Características:**
+- ✅ **Documentação dinâmica** baseada nos plugins ativos
+- ✅ **Agrupamento por tags** (System, Usuários, Produtos, Pedidos)
+- ✅ **Schemas automáticos** gerados pelos plugins
+- ✅ **Endpoints organizados** por funcionalidade
+- ✅ **Interface interativa** para testar a API
+
+#### **🔧 Como Funciona:**
+1. **Plugins fornecem** suas próprias informações de documentação
+2. **SwaggerGenerator** coleta dinamicamente os dados
+3. **Interface se adapta** automaticamente aos plugins carregados
+4. **Zero configuração** manual necessária
+
+#### **📊 Exemplo de Agrupamento:**
+```
+Tags disponíveis:
+  - System: Endpoints relacionados ao sistema principal
+  - Usuários: Endpoints relacionados a usuários
+  - Produtos: Endpoints relacionados a produtos
+  - Pedidos: Endpoints relacionados a pedidos
+
+Endpoints por tag:
+  System: 8 endpoints
+  Usuários: 5 endpoints
+  Produtos: 7 endpoints
+  Pedidos: 8 endpoints
+```
 
 ## 📖 Endpoints da API
 
@@ -142,6 +183,12 @@ Após executar o projeto, a API estará disponível em:
 | GET    | `/api/health`     | Status básico da API             |
 | GET    | `/api/health/detailed` | Status detalhado da API      |
 | GET    | `/api/health/database` | Status do banco de dados   |
+
+### 📚 Swagger/OpenAPI
+| Método | Endpoint           | Descrição                        |
+|--------|-------------------|----------------------------------|
+| GET    | `/api/swagger`    | Documentação OpenAPI (JSON)      |
+| GET    | `/api/swagger-ui` | Interface Swagger UI             |
 
 ### 👤 Usuários (User)
 | Método | Endpoint         | Descrição           |
@@ -348,6 +395,7 @@ CREATE TABLE order_products (
 3. **Descoberta Dinâmica**: ServiceLoader carrega plugins automaticamente
 4. **Baixo Acoplamento**: Plugins não dependem uns dos outros
 5. **Extensibilidade**: Novos plugins podem ser adicionados facilmente
+6. **Documentação Plugável**: Swagger se adapta aos plugins carregados
 
 ### Vantagens da Arquitetura
 
@@ -356,6 +404,35 @@ CREATE TABLE order_products (
 - ✅ **Manutenibilidade**: Mudanças isoladas por plugin
 - ✅ **Testabilidade**: Plugins podem ser testados isoladamente
 - ✅ **Flexibilidade**: Plugins podem ser ativados/desativados
+- ✅ **Documentação Dinâmica**: Swagger se adapta automaticamente
+
+### 🔧 Interface Plugin Expandida
+
+A interface `Plugin` foi expandida para suportar documentação plugável:
+
+```java
+public interface Plugin {
+    String getName();
+    void execute();
+    List<String> getAvailableRoutes();
+    String getEmoji();
+    
+    // Novos métodos para documentação Swagger
+    Map<String, Object> getSwaggerInfo();
+    Map<String, Object> getOpenApiSchemas();
+    Map<String, Object> getOpenApiPaths();
+    List<String> getOpenApiTags();
+}
+```
+
+### 📊 SwaggerGenerator Plugável
+
+O `SwaggerGenerator` coleta dinamicamente informações dos plugins:
+
+- ✅ **Schemas automáticos** dos plugins
+- ✅ **Paths dinâmicos** baseados nos endpoints
+- ✅ **Tags organizadas** por funcionalidade
+- ✅ **Zero configuração** manual
 
 ## 🧪 Testes da API
 
